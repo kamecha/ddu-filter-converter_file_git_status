@@ -13,30 +13,29 @@ export class Filter extends BaseFilter<Params> {
   filter(
     args: FilterArguments<Params>,
   ): Promise<DduFilterItems> {
-    return Promise.resolve(
-      args.items.map((item: DduItem) => {
-        const action = item.action! as ActionData;
-        const path = action.path!;
-        const command = new Deno.Command("git", {
-          args: ["status", "--short", path],
-        });
-        const line = new TextDecoder()
-          .decode(command.outputSync().stdout)
-          .trimEnd();
-        const parsed = parse(line);
-        const display = item.display ?? item.word;
-        if (!parsed) {
-          return {
-            ...item,
-            display: display + "    ",
-          }
-        }
+    const ret = args.items.map((item: DduItem) => {
+      const action = item.action! as ActionData;
+      const path = action.path!;
+      const command = new Deno.Command("git", {
+        args: ["status", "--short", path],
+      });
+      const line = new TextDecoder()
+        .decode(command.outputSync().stdout)
+        .trimEnd();
+      const parsed = parse(line);
+      const display = item.display ?? item.word;
+      if (!parsed) {
         return {
           ...item,
-          display: display + `[${parsed.X}${parsed.Y}]`,
+          display: display + "    ",
         };
-      }),
-    );
+      }
+      return {
+        ...item,
+        display: display + `[${parsed.X}${parsed.Y}]`,
+      };
+    });
+    return Promise.resolve(ret);
   }
   params(): Params {
     return {};
