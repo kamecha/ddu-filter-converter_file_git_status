@@ -13,7 +13,7 @@ export class Filter extends BaseFilter<Params> {
   filter(
     args: FilterArguments<Params>,
   ): Promise<DduFilterItems> {
-    const ret = args.items.map((item: DduItem) => {
+    for (const item of args.items) {
       const action = item.action! as ActionData;
       const path = action.path!;
       const command = new Deno.Command("git", {
@@ -25,17 +25,12 @@ export class Filter extends BaseFilter<Params> {
       const parsed = parse(line);
       const display = item.display ?? item.word;
       if (!parsed) {
-        return {
-          ...item,
-          display: display + "    ",
-        };
+        item.display = display + "    ";
+        continue;
       }
-      return {
-        ...item,
-        display: display + `[${parsed.X}${parsed.Y}]`,
-      };
-    });
-    return Promise.resolve(ret);
+      item.display = display + `[${parsed.X}${parsed.Y}]`;
+    }
+    return Promise.resolve(args.items);
   }
   params(): Params {
     return {};
