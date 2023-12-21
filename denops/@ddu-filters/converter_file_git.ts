@@ -24,10 +24,13 @@ export class Filter extends BaseFilter<Params> {
           .decode(command.outputSync().stdout)
           .trimEnd();
         const parsed = parse(line);
+        if (!parsed) {
+          return item;
+        }
         const display = item.display ?? item.word;
         return {
           ...item,
-          display: display + `[${parsed?.X}${parsed?.Y}]`,
+          display: display + `[${parsed.X}${parsed.Y}]`,
         };
       }),
     );
