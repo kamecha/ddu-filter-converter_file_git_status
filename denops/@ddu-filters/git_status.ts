@@ -4,8 +4,8 @@
  * XY ORIG_PATH -> PATH
  */
 export type Entity = {
-	X: string;
-	Y: string;
+	X: " " | "M" | "T" | "A" | "D" | "R" | "C" | "U" | "?" | "!";
+	Y: " " | "M" | "T" | "A" | "D" | "R" | "C" | "U" | "?" | "!";
 	path: string;
 	origPath?: string;
 }
@@ -23,11 +23,11 @@ export function parse(line: string): Entity | undefined {
 	const entityPattern = /^([ MTADRCU?!])([ MTADRCU?!]) (.+)$/;
 	if (line.match(entityWithOrigPathPattern)) {
 		const [, X, Y, origPath, path] = line.match(entityWithOrigPathPattern)!;
-		return { X, Y, origPath, path };
+    return { X, Y, origPath, path } as Entity;
 	}
 	if (line.match(entityPattern)) {
 		const [, X, Y, path] = line.match(entityPattern)!;
-		return { X, Y, path };
+		return { X, Y, path } as Entity;
 	}
 	return undefined;
 }
