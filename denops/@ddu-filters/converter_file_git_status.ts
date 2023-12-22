@@ -1,11 +1,11 @@
-import { FilterArguments } from "https://deno.land/x/ddu_vim@v3.8.1/base/filter.ts";
 import {
+  ActionData,
   BaseFilter,
   DduFilterItems,
   DduItem,
+  FilterArguments,
   ItemHighlight,
-} from "https://deno.land/x/ddu_vim@v3.8.1/types.ts";
-import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.5.3/file.ts";
+} from "../deps.ts";
 import { Entity, parse } from "./git_status.ts";
 
 const HIGHLIGHT_NAME = "ddu_git_status";
