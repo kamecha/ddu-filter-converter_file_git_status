@@ -3,7 +3,8 @@ import {
   GetTextArguments,
   GetTextResult,
 } from "https://deno.land/x/ddu_vim@v3.8.1/base/column.ts";
-import { BaseColumn } from "../deps.ts";
+import { ActionData, BaseColumn } from "../deps.ts";
+import { parse } from "../@ddu-filters/git_status.ts";
 
 export type Params = Record<never, never>;
 
@@ -11,14 +12,30 @@ export class Column extends BaseColumn<Params> {
   getLength(
     {}: GetLengthArguments<Params>,
   ): number | Promise<number> {
-    throw new Error("Method not implemented.");
+    return 4;
   }
   getText(
-    {}: GetTextArguments<Params>,
+    args: GetTextArguments<Params>,
   ): GetTextResult | Promise<GetTextResult> {
-    throw new Error("Method not implemented.");
+    const action = args.item.action! as ActionData;
+    const path = action.path!;
+    const command = new Deno.Command("git", {
+      args: ["status", "--short", path],
+    });
+    const line = new TextDecoder()
+      .decode(command.outputSync().stdout)
+      .trimEnd();
+    const parsed = parse(line);
+    if (!parsed) {
+      return {
+        text: "    ",
+      };
+    }
+    return {
+      text: `[${parsed.X}${parsed.Y}]`,
+    };
   }
   params(): Params {
-    throw new Error("Method not implemented.");
+    return {};
   }
 }
