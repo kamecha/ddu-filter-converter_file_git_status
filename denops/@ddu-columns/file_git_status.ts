@@ -14,7 +14,7 @@ export class Column extends BaseColumn<Params> {
   getLength(
     {}: GetLengthArguments<Params>,
   ): number | Promise<number> {
-    return 4;
+    return (new TextEncoder().encode("[XY]")).length;
   }
   async getText(
     args: GetTextArguments<Params>,
@@ -30,7 +30,7 @@ export class Column extends BaseColumn<Params> {
     const parsed = parse(line);
     if (!parsed) {
       return {
-        text: "    ",
+        text: " ".repeat(args.endCol - args.startCol),
       };
     }
     await args.denops.cmd(
