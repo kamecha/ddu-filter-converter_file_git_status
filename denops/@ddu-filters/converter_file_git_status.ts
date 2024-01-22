@@ -3,7 +3,9 @@ import {
   BaseFilter,
   DduFilterItems,
   DduItem,
+  Denops,
   FilterArguments,
+  fn,
   ItemHighlight,
 } from "../deps.ts";
 import { Entity, parse } from "./git_status.ts";
@@ -50,7 +52,9 @@ export class Filter extends BaseFilter<Params> {
         "highlight default link ddu_git_status_ignored Comment",
       );
       const highlights: ItemHighlight[] = item.highlights ?? [];
-      for (const highlight of this.defineHilight(item, parsed)) {
+      for (
+        const highlight of await this.defineHilight(args.denops, item, parsed)
+      ) {
         highlights.push(highlight);
       }
       item.display = display + `[${parsed.X}${parsed.Y}]`;
@@ -61,14 +65,19 @@ export class Filter extends BaseFilter<Params> {
   params(): Params {
     return {};
   }
-  defineHilight(item: DduItem, entity: Entity): ItemHighlight[] {
+  async defineHilight(
+    denops: Denops,
+    item: DduItem,
+    entity: Entity,
+  ): Promise<ItemHighlight[]> {
     const highlights: ItemHighlight[] = [];
     const display = item.display ?? item.word;
+    const displayLength = await fn.strlen(denops, display);
     // [
     highlights.push({
       name: HIGHLIGHT_NAME,
       hl_group: "ddu_git_status_bracket",
-      col: display.length + 1,
+      col: displayLength + 1,
       width: 1,
     });
     // XY
@@ -77,7 +86,7 @@ export class Filter extends BaseFilter<Params> {
         highlights.push({
           name: HIGHLIGHT_NAME,
           hl_group: "ddu_git_status_untracked",
-          col: display.length + 2,
+          col: displayLength + 2,
           width: 2,
         });
         break;
@@ -85,7 +94,7 @@ export class Filter extends BaseFilter<Params> {
         highlights.push({
           name: HIGHLIGHT_NAME,
           hl_group: "ddu_git_status_ignored",
-          col: display.length + 2,
+          col: displayLength + 2,
           width: 2,
         });
         break;
@@ -94,14 +103,14 @@ export class Filter extends BaseFilter<Params> {
         highlights.push({
           name: HIGHLIGHT_NAME,
           hl_group: "ddu_git_status_index",
-          col: display.length + 2,
+          col: displayLength + 2,
           width: 1,
         });
         // Y
         highlights.push({
           name: HIGHLIGHT_NAME,
           hl_group: "ddu_git_status_worktree",
-          col: display.length + 3,
+          col: displayLength + 3,
           width: 1,
         });
         break;
@@ -110,7 +119,7 @@ export class Filter extends BaseFilter<Params> {
     highlights.push({
       name: HIGHLIGHT_NAME,
       hl_group: "ddu_git_status_bracket",
-      col: display.length + 4,
+      col: displayLength + 4,
       width: 1,
     });
     return highlights;

@@ -1,3 +1,5 @@
+export type { Denops } from "https://deno.land/x/ddu_vim@v3.8.1/deps.ts";
+export { fn } from "https://deno.land/x/ddu_vim@v3.8.1/deps.ts";
 export type {
   DduFilterItems,
   DduItem,
